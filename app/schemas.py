@@ -16,6 +16,7 @@ class ProjectCreate(BaseModel):
 class TaskCreate(BaseModel):
     title:str
     description: str
+    status: str
     due_date: date
     project_id: int
     owner_id: int

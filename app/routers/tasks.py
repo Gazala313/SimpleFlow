@@ -50,3 +50,25 @@ def delete_project(task_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Project deleted successfully"}
+
+
+@router.put("/{task_id}")
+def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+    db_task = db.query(Task).filter(Task.id == task_id).first()
+
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db_task.title = task.title
+    db_task.description = task.description
+    db_task.due_date = task.due_date
+    db_task.owner_id = task.owner_id
+    db_task.status = task.status
+
+    db.commit()
+    db.refresh(db_task)
+
+    return db_task
+
+
+
