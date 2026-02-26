@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .seed import seed_roles
 
 # Get origins from environment variable, fallback to localhost
-origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5174")
+origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5174","https://proud-grass-004f4740f.4.azurestaticapps.net")
 origins = [origin.strip() for origin in origins_str.split(",")]
 
 Base.metadata.create_all(bind=engine)
