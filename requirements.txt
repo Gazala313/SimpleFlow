@@ -7,3 +7,4 @@ python-dotenv
 python-jose
 requests
 pymysql
+python-jose[cryptography]

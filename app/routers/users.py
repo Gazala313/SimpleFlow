@@ -10,8 +10,8 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/")
 def create_user(user: UserCreate,
-                db: Session = Depends(get_db)):
-                # current=Depends(require_role(["admin"]))):
+                db: Session = Depends(get_db),
+                current=Depends(require_role(["admin"]))):
     db_user = User(**user.dict())
     db.add(db_user)
     db.commit()
@@ -35,12 +35,22 @@ def get_project(user_id: int, db: Session = Depends(get_db)):
 
     return user
 
+@router.get("/user/{email}")
+def get_project(email: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
 
 @router.put("/{user_id}")
 def update_project(
     user_id: int,
     updated_user: UserCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current=Depends(require_role(["admin"]))
 ):
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -58,7 +68,8 @@ def update_project(
 
 
 @router.delete("/{user_id}")
-def delete_project(user_id: int, db: Session = Depends(get_db)):
+def delete_project(user_id: int, db: Session = Depends(get_db),
+                   current=Depends(require_role(["admin"]))):
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:

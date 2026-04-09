@@ -10,8 +10,8 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 @router.post("/")
 def create_task(task: TaskCreate,
-                db: Session = Depends(get_db)):
-                # current=Depends(require_role(["admin", "task_creator"]))):
+                db: Session = Depends(get_db),
+                current=Depends(require_role(["admin", "task_creator"]))):
     db_task = Task(**task.dict())
     db.add(db_task)
     db.commit()
@@ -20,8 +20,8 @@ def create_task(task: TaskCreate,
 
 @router.put("/{task_id}/complete")
 def mark_complete(task_id: int,
-                  db: Session = Depends(get_db)):
-                #   current=Depends(require_role(["admin", "read_only"]))):
+                  db: Session = Depends(get_db),
+                  current=Depends(require_role(["admin", "read_only"]))):
     task = db.query(Task).get(task_id)
     task.status = "COMPLETED"
     db.commit()
@@ -39,8 +39,8 @@ def get_tasks_by_project(
 
 
 @router.delete("/{task_id}")
-def delete_project(task_id: int, db: Session = Depends(get_db)):
-                #    current=Depends(require_role(["admin", "task_creator"]))):
+def delete_project(task_id: int, db: Session = Depends(get_db),
+                   current=Depends(require_role(["admin", "task_creator"]))):
     task = db.query(Task).filter(Task.id == task_id).first()
 
     if not task:
@@ -53,7 +53,8 @@ def delete_project(task_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{task_id}")
-def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
+def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db),
+                current=Depends(require_role(["admin"]))):
     db_task = db.query(Task).filter(Task.id == task_id).first()
 
     if not db_task:
